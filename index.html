@@ -1,184 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Mood, Anxiety & Trauma Questionnaires</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Questionnaires | Meaningful Path Therapy</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#1f2430;
+      --muted:#667085;
+      --line:#e6e8ee;
+      --accent:#2f6fed;
+      --accent2:#1f5bd8;
+      --danger:#b42318;
+      --shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 1.5rem;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.5;
-      background: #f5f5f7;
-      color: #222;
     }
-    h1, h2 {
-      margin-top: 0;
+    .header{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: color-mix(in oklab, var(--bg) 92%, white 8%);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
     }
-    .card {
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    .header-inner{
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
     }
-    .question {
-      margin-bottom: 1rem;
-    }
-    .question p {
-      margin: 0 0 0.5rem;
-      font-weight: 500;
-    }
-    .options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1.5rem;
-      font-size: 0.95rem;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.25rem;
-      font-weight: 500;
-    }
-    input[type="text"], select, textarea {
-      width: 100%;
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font: inherit;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-    .small {
+    .brand{display:flex; flex-direction:column; gap:2px;}
+    .brand .title{font-weight: 750; letter-spacing:-0.02em;}
+    .brand .subtitle{color: var(--muted); font-size: 0.92rem;}
+    .badge{
       font-size: 0.85rem;
-      color: #555;
-    }
-    .required {
-      color: #c00;
-    }
-    button {
-      padding: 0.75rem 1.5rem;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      padding: 6px 10px;
       border-radius: 999px;
-      border: none;
-      font-size: 1rem;
+      background: white;
+      white-space: nowrap;
+    }
+
+    .container{
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 22px 16px 56px;
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .stack{display:flex; flex-direction:column; gap: 14px;}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .col-12{grid-column: span 12;}
+    .col-6{grid-column: span 6;}
+    @media (max-width: 720px){ .col-6{grid-column: span 12;} }
+
+    .kicker{font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing:0.08em;}
+    .h1{font-size: 1.4rem; margin: 0; letter-spacing:-0.02em;}
+    .h2{font-size: 1.1rem; margin: 0; letter-spacing:-0.02em;}
+    .small{font-size: 0.92rem; color: var(--muted);}
+
+    .notice{
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .notice strong{color: var(--text);}
+
+    .field label{display:block; font-weight: 650; margin-bottom: 6px;}
+    .req{color: var(--danger);}
+    input[type="text"], select, textarea{
+      width: 100%;
+      padding: 12px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font: inherit;
+      outline: none;
+      background: white;
+    }
+    textarea{min-height: 84px; resize: vertical;}
+    input[type="text"]:focus, select:focus, textarea:focus{
+      border-color: color-mix(in oklab, var(--accent) 60%, var(--line) 40%);
+      box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 15%, transparent 85%);
+    }
+
+    .stepper{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+    .step{
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+    .step.is-active{
+      border-color: color-mix(in oklab, var(--accent) 55%, var(--line) 45%);
+      background: color-mix(in oklab, var(--accent) 10%, white 90%);
+      color: var(--text);
+      font-weight: 650;
+    }
+    .step.is-done{
+      border-color: color-mix(in oklab, var(--accent) 35%, var(--line) 65%);
+      color: var(--text);
+    }
+
+    .progress-wrap{display:flex; align-items:center; gap: 10px;}
+    .progress{
+      flex:1;
+      height: 8px;
+      background: #eef1f7;
+      border-radius: 999px;
+      overflow:hidden;
+      border: 1px solid var(--line);
+    }
+    .progress > div{
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+    }
+
+    .question{
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: white;
+    }
+    .q-title{font-weight: 650; margin: 0 0 10px;}
+    .choices{display:flex; flex-wrap: wrap; gap: 8px;}
+    .choice{
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      border-radius: 999px;
       cursor: pointer;
-      background: #2f6fed;
-      color: white;
-      font-weight: 600;
-    }
-    button:disabled {
-      opacity: 0.6;
-      cursor: default;
-    }
-    .result-box {
-      background: #e8f0ff;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
+      user-select:none;
+      background: #fbfcff;
+      transition: transform .04s ease, border-color .12s ease, background .12s ease;
       font-size: 0.95rem;
+    }
+    .choice:hover{transform: translateY(-1px);}
+    .choice input{display:none;}
+    .choice.is-selected{
+      border-color: color-mix(in oklab, var(--accent) 70%, var(--line) 30%);
+      background: color-mix(in oklab, var(--accent) 10%, white 90%);
+    }
+
+    .actions{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .btn{
+      border: none;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 750;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+    }
+    .btn:hover{background: var(--accent2);}
+    .btn:disabled{opacity:.65; cursor: default;}
+    .btn-ghost{
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+    .btn-ghost:hover{background: #f8f9fc;}
+    .result-box{
+      background: #e8f0ff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      border: 1px solid var(--line);
+    }
+    .alert{
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid color-mix(in oklab, var(--danger) 30%, var(--line) 70%);
+      background: color-mix(in oklab, var(--danger) 7%, white 93%);
+      color: var(--text);
     }
   </style>
 </head>
 <body>
-  <h1>Mood, Anxiety & Trauma Questionnaires</h1>
-  <p class="small">
-    Your answers will be sent securely to your therapist at Meaningful Path Therapy.
-    Only your initials are required, not your full name. By submitting, you consent to these
-    results being used for clinical purposes.
-  </p>
-
-  <!--
-    Form posts to FormSubmit, which emails meaningfulpaththerapy@gmail.com.
-    User does NOT need an email account or client.
-  -->
-  <form
-    id="screeners-form"
-    class="card"
-    action="https://formsubmit.co/meaningfulpaththerapy@gmail.com"
-    method="POST"
-  >
-    <!-- FormSubmit options -->
-    <input type="hidden" name="_subject" value="Questionnaire results – Meaningful Path Therapy">
-    <!-- You can change _next to a thank-you page if you create one -->
-    <!-- <input type="hidden" name="_next" value="https://your-username.github.io/your-repo/thankyou.html"> -->
-
-    <!-- This will contain the full computed summary (scores + answers) -->
-    <textarea name="summary" id="summary" style="display:none;"></textarea>
-
-    <!-- Client info -->
-    <div class="card" style="padding:1rem; margin:-0.5rem 0 1.5rem;">
-      <label for="initials">Initials <span class="required">*</span></label>
-      <input type="text" id="initials" name="initials" maxlength="10" required>
-
-      <label for="ageBand" style="margin-top:0.75rem;">Age band (optional)</label>
-      <select id="ageBand" name="ageBand">
-        <option value="">Prefer not to say</option>
-        <option value="18-24">18–24</option>
-        <option value="25-34">25–34</option>
-        <option value="35-44">35–44</option>
-        <option value="45-54">45–54</option>
-        <option value="55+">55+</option>
-      </select>
-
-      <label for="eventDesc" style="margin-top:0.75rem;">
-        Brief description of the stressful event (for IES-R, optional)
-      </label>
-      <textarea
-        id="eventDesc"
-        name="eventDesc"
-        placeholder="e.g. accident, loss, assault (no details needed)"
-      ></textarea>
-
-      <div style="margin-top:0.75rem;">
-        <label style="font-weight:400;">
-          <input type="checkbox" id="consent" required>
-          I agree to share these questionnaire results with my therapist.
-        </label>
+  <div class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="title">Meaningful Path Therapy</div>
+        <div class="subtitle">Questionnaires (PHQ-9 • GAD-7 • IES-R)</div>
       </div>
+      <div class="badge" id="initialsBadge">Initials: —</div>
+    </div>
+  </div>
+
+  <div class="container stack">
+
+    <div class="card stack">
+      <div class="stepper" id="stepper"></div>
+
+      <div class="progress-wrap">
+        <div class="progress"><div id="progressBar"></div></div>
+        <div class="badge" id="progressLabel">0%</div>
+      </div>
+
+      <div class="notice" id="stepIntro"></div>
     </div>
 
-    <!-- PHQ-9 -->
-    <div class="card">
-      <h2>PHQ-9 – Mood (past 2 weeks)</h2>
-      <p class="small">
-        Over the last 2 weeks, how often have you been bothered by any of the following problems?
-      </p>
-      <div id="phq9-questions"></div>
-    </div>
+    <!-- One form, one final submit -->
+    <form id="wizardForm" class="card stack" method="POST"
+          action="https://formsubmit.co/meaningfulpaththerapy@gmail.com">
+      <!-- FormSubmit helpers -->
+      <input type="hidden" name="_subject" id="_subject" value="">
+      <input type="hidden" name="_next" value="./thankyou.html">
+      <textarea name="summary" id="summary" style="display:none;"></textarea>
 
-    <!-- GAD-7 -->
-    <div class="card">
-      <h2>GAD-7 – General Anxiety (past 2 weeks)</h2>
-      <p class="small">
-        Over the last 2 weeks, how often have you been bothered by the following problems?
-      </p>
-      <div id="gad7-questions"></div>
-    </div>
+      <!-- STEP 0: Start -->
+      <section id="step-0" class="stack">
+        <div>
+          <div class="kicker">Start</div>
+          <h1 class="h1">Enter your initials</h1>
+          <p class="small">You’ll complete one questionnaire at a time. At the end, everything will be submitted together.</p>
+        </div>
 
-    <!-- IES-R -->
-    <div class="card">
-      <h2>IES-R – Impact of Event (past 7 days)</h2>
-      <p class="small">
-        Below is a list of difficulties people sometimes have after stressful life events.
-        Please indicate how distressing each difficulty has been for you during the past 7 days
-        with respect to the event you have in mind.
-      </p>
-      <div id="iesr-questions"></div>
-    </div>
+        <div class="grid">
+          <div class="col-6 field">
+            <label for="initials">Initials <span class="req">*</span></label>
+            <input id="initials" name="initials" type="text" maxlength="10" required>
+            <div class="small">Example: AA</div>
+          </div>
+          <div class="col-6 field">
+            <label for="ageBand">Age band (optional)</label>
+            <select id="ageBand" name="ageBand">
+              <option value="">Prefer not to say</option>
+              <option value="18-24">18–24</option>
+              <option value="25-34">25–34</option>
+              <option value="35-44">35–44</option>
+              <option value="45-54">45–54</option>
+              <option value="55+">55+</option>
+            </select>
+          </div>
 
-    <!-- Client-facing summary -->
-    <div id="results" class="result-box" style="display:none;"></div>
+          <div class="col-12 field">
+            <label style="font-weight:400;">
+              <input type="checkbox" id="consent" required>
+              I agree to share these questionnaire results with my therapist.
+            </label>
+          </div>
+        </div>
 
-    <button id="submit-btn" type="submit">Submit results</button>
-  </form>
+        <div class="alert">
+          <strong>Note:</strong> Do not use this form for emergencies. If you are at immediate risk, contact local emergency services.
+        </div>
+      </section>
+
+      <!-- STEP 1: PHQ-9 -->
+      <section id="step-1" class="stack" style="display:none;">
+        <div>
+          <div class="kicker">PHQ-9</div>
+          <h2 class="h2">Mood (past 2 weeks)</h2>
+        </div>
+        <div id="phq9Questions" class="stack"></div>
+      </section>
+
+      <!-- STEP 2: GAD-7 -->
+      <section id="step-2" class="stack" style="display:none;">
+        <div>
+          <div class="kicker">GAD-7</div>
+          <h2 class="h2">General anxiety (past 2 weeks)</h2>
+        </div>
+        <div id="gad7Questions" class="stack"></div>
+      </section>
+
+      <!-- STEP 3: IES-R -->
+      <section id="step-3" class="stack" style="display:none;">
+        <div>
+          <div class="kicker">IES-R</div>
+          <h2 class="h2">Impact of Event (past 7 days)</h2>
+          <p class="small">With respect to the event you have in mind.</p>
+        </div>
+
+        <div class="field">
+          <label for="eventDesc">Brief description of the event (optional)</label>
+          <textarea id="eventDesc" name="eventDesc" placeholder="e.g. accident, loss, assault (no details needed)"></textarea>
+          <div class="small">Please avoid including identifying details.</div>
+        </div>
+
+        <div id="iesrQuestions" class="stack"></div>
+      </section>
+
+      <!-- STEP 4: Review + Submit -->
+      <section id="step-4" class="stack" style="display:none;">
+        <div>
+          <div class="kicker">Review</div>
+          <h2 class="h2">Ready to submit</h2>
+          <p class="small">This will send all results together to your therapist.</p>
+        </div>
+
+        <div id="reviewBox" class="result-box"></div>
+
+        <div class="notice">
+          <strong>Reminder:</strong> If item 9 on PHQ-9 indicates thoughts of self-harm, please contact emergency services or local crisis support.
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="button" class="btn btn-ghost" id="backBtn">Back</button>
+        <button type="button" class="btn" id="nextBtn">Next</button>
+      </div>
+    </form>
+  </div>
 
   <script>
-    // ====== DATA: QUESTION TEXTS ======
+    // ---------- Data ----------
+    const steps = [
+      { key: "start", label: "Start", intro: "Enter initials once, then complete each questionnaire. Submit once at the end." },
+      { key: "phq9", label: "PHQ-9", intro: "PHQ-9: Over the last 2 weeks, how often have you been bothered by any of the following problems?" },
+      { key: "gad7", label: "GAD-7", intro: "GAD-7: Over the last 2 weeks, how often have you been bothered by the following problems?" },
+      { key: "iesr", label: "IES-R", intro: "IES-R: During the past 7 days, how distressing has each item been with respect to the event you have in mind?" },
+      { key: "review", label: "Review", intro: "Review your scores, then submit all results together." }
+    ];
 
     const phq9Items = [
       "Little interest or pleasure in doing things",
@@ -227,41 +400,6 @@
       "I tried not to talk about it"
     ];
 
-    // ====== RENDER HELPERS ======
-
-    function renderLikertQuestions(containerId, items, namePrefix, options) {
-      const container = document.getElementById(containerId);
-      items.forEach((text, index) => {
-        const qNum = index + 1;
-        const name = `${namePrefix}_q${qNum}`;
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "question";
-
-        const p = document.createElement("p");
-        p.textContent = `${qNum}. ${text}`;
-        wrapper.appendChild(p);
-
-        const optionsDiv = document.createElement("div");
-        optionsDiv.className = "options";
-
-        options.forEach(opt => {
-          const label = document.createElement("label");
-          label.style.fontWeight = "400";
-          const input = document.createElement("input");
-          input.type = "radio";
-          input.name = name;
-          input.value = opt.value;
-          label.appendChild(input);
-          label.appendChild(document.createTextNode(" " + opt.label));
-          optionsDiv.appendChild(label);
-        });
-
-        wrapper.appendChild(optionsDiv);
-        container.appendChild(wrapper);
-      });
-    }
-
     const phqGadOptions = [
       { value: 0, label: "Not at all (0)" },
       { value: 1, label: "Several days (1)" },
@@ -277,29 +415,76 @@
       { value: 4, label: "Extremely (4)" }
     ];
 
-    renderLikertQuestions("phq9-questions", phq9Items, "phq9", phqGadOptions);
-    renderLikertQuestions("gad7-questions", gad7Items, "gad7", phqGadOptions);
-    renderLikertQuestions("iesr-questions", iesrItems, "iesr", iesrOptions);
+    // ---------- Helpers ----------
+    const $ = (s) => document.querySelector(s);
 
-    // ====== SCORING HELPERS ======
+    function isoDate(){
+      return new Date().toISOString().slice(0,10);
+    }
 
-    function getScore(prefix, count) {
-      let total = 0;
+    function setInitialsBadge(){
+      const initials = ($("#initials")?.value || "").trim();
+      $("#initialsBadge").textContent = initials ? `Initials: ${initials}` : "Initials: —";
+    }
+
+    function renderQuestions(containerId, items, prefix, options){
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+
+      items.forEach((text, idx) => {
+        const n = idx + 1;
+        const name = `${prefix}_q${n}`;
+
+        const wrap = document.createElement("div");
+        wrap.className = "question";
+
+        const p = document.createElement("p");
+        p.className = "q-title";
+        p.textContent = `${n}. ${text}`;
+        wrap.appendChild(p);
+
+        const choices = document.createElement("div");
+        choices.className = "choices";
+
+        options.forEach(opt => {
+          const label = document.createElement("label");
+          label.className = "choice";
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = name;
+          input.value = opt.value;
+
+          input.addEventListener("change", () => {
+            [...choices.querySelectorAll(".choice")].forEach(c => c.classList.remove("is-selected"));
+            label.classList.add("is-selected");
+            updateOverallProgress();
+          });
+
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(opt.label));
+          choices.appendChild(label);
+        });
+
+        wrap.appendChild(choices);
+        container.appendChild(wrap);
+      });
+    }
+
+    function getAnswers(prefix, count){
       const answers = [];
-      for (let i = 1; i <= count; i++) {
-        const name = `${prefix}_q${i}`;
-        const el = document.querySelector(`input[name="${name}"]:checked`);
-        if (!el) {
-          return null; // missing answer
-        }
-        const val = parseInt(el.value, 10);
-        answers.push(val);
-        total += val;
+      let total = 0;
+      for (let i=1; i<=count; i++){
+        const el = document.querySelector(`input[name="${prefix}_q${i}"]:checked`);
+        if (!el) return null;
+        const v = parseInt(el.value, 10);
+        answers.push(v);
+        total += v;
       }
       return { total, answers };
     }
 
-    function phqSeverity(score) {
+    function phqSeverity(score){
       if (score <= 4) return "Minimal";
       if (score <= 9) return "Mild";
       if (score <= 14) return "Moderate";
@@ -307,59 +492,145 @@
       return "Severe";
     }
 
-    function gadSeverity(score) {
+    function gadSeverity(score){
       if (score <= 4) return "Minimal";
       if (score <= 9) return "Mild";
       if (score <= 14) return "Moderate";
       return "Severe";
     }
 
-    function formatDateISO() {
-      return new Date().toISOString().slice(0, 10);
+    function buildStepper(activeIndex){
+      const el = $("#stepper");
+      el.innerHTML = "";
+      steps.forEach((s, idx) => {
+        const pill = document.createElement("div");
+        pill.className = "step";
+        pill.textContent = s.label;
+        if (idx === activeIndex) pill.classList.add("is-active");
+        if (idx < activeIndex) pill.classList.add("is-done");
+        el.appendChild(pill);
+      });
     }
 
-    // ====== FORM SUBMIT LOGIC ======
+    function totalQuestions(){
+      return phq9Items.length + gad7Items.length + iesrItems.length;
+    }
 
-    const form = document.getElementById("screeners-form");
-    const resultsBox = document.getElementById("results");
-    const submitBtn = document.getElementById("submit-btn");
+    function answeredCount(){
+      // Count checked radios across all questionnaires
+      const checked = document.querySelectorAll('input[type="radio"]:checked').length;
+      return checked;
+    }
 
-    form.addEventListener("submit", function(e) {
-      e.preventDefault(); // we will manually submit after building summary
+    function updateOverallProgress(){
+      const total = totalQuestions();
+      const done = answeredCount();
+      const pct = Math.round((done / total) * 100);
+      $("#progressBar").style.width = `${pct}%`;
+      $("#progressLabel").textContent = `${pct}%`;
+    }
 
-      const initials = document.getElementById("initials").value.trim();
-      const ageBand = document.getElementById("ageBand").value;
-      const eventDesc = document.getElementById("eventDesc").value.trim();
-      const consentChecked = document.getElementById("consent").checked;
-
-      if (!initials) {
-        alert("Please enter your initials.");
-        return;
+    function showStep(index){
+      // hide all
+      for (let i=0; i<=4; i++){
+        const sec = document.getElementById(`step-${i}`);
+        if (sec) sec.style.display = "none";
       }
-      if (!consentChecked) {
-        alert("Please tick the consent box before submitting.");
-        return;
+      document.getElementById(`step-${index}`).style.display = "block";
+
+      // header bits
+      buildStepper(index);
+      $("#stepIntro").textContent = steps[index].intro;
+
+      // button states
+      $("#backBtn").style.visibility = index === 0 ? "hidden" : "visible";
+      $("#nextBtn").textContent = index === 4 ? "Submit" : "Next";
+
+      updateOverallProgress();
+      setInitialsBadge();
+    }
+
+    function validateStep(index){
+      if (index === 0){
+        const initials = ($("#initials").value || "").trim();
+        const consent = $("#consent").checked;
+        if (!initials){
+          alert("Please enter your initials.");
+          $("#initials").focus();
+          return false;
+        }
+        if (!consent){
+          alert("Please tick the consent box before continuing.");
+          return false;
+        }
+        return true;
       }
 
-      const phq = getScore("phq9", phq9Items.length);
-      const gad = getScore("gad7", gad7Items.length);
-      const iesr = getScore("iesr", iesrItems.length);
-
-      if (!phq || !gad || !iesr) {
-        alert("Please answer all questions on all questionnaires before submitting.");
-        return;
+      if (index === 1){
+        const phq = getAnswers("phq9", phq9Items.length);
+        if (!phq){ alert("Please answer all PHQ-9 questions before continuing."); return false; }
+        return true;
       }
+      if (index === 2){
+        const gad = getAnswers("gad7", gad7Items.length);
+        if (!gad){ alert("Please answer all GAD-7 questions before continuing."); return false; }
+        return true;
+      }
+      if (index === 3){
+        const iesr = getAnswers("iesr", iesrItems.length);
+        if (!iesr){ alert("Please answer all IES-R questions before continuing."); return false; }
+        return true;
+      }
+      return true;
+    }
+
+    function fillReview(){
+      const initials = ($("#initials").value || "").trim();
+      const ageBand = ($("#ageBand").value || "").trim();
+      const eventDesc = ($("#eventDesc").value || "").trim();
+      const date = isoDate();
+
+      const phq = getAnswers("phq9", phq9Items.length);
+      const gad = getAnswers("gad7", gad7Items.length);
+      const iesr = getAnswers("iesr", iesrItems.length);
 
       const phqSev = phqSeverity(phq.total);
       const gadSev = gadSeverity(gad.total);
-      const date = formatDateISO();
 
-      // Build a detailed summary to receive by email
-      const summaryLines = [
+      $("#reviewBox").innerHTML = `
+        <strong>Initials:</strong> ${initials}<br>
+        <strong>Date:</strong> ${date}<br>
+        <strong>Age band:</strong> ${ageBand || "Not provided"}<br>
+        ${eventDesc ? `<strong>Event (brief):</strong> ${escapeHtml(eventDesc)}<br>` : `<strong>Event (brief):</strong> Not provided<br>`}
+        <div style="height:10px;"></div>
+        <strong>PHQ-9:</strong> ${phq.total} (${phqSev})<br>
+        <strong>GAD-7:</strong> ${gad.total} (${gadSev})<br>
+        <strong>IES-R:</strong> ${iesr.total}
+      `;
+    }
+
+    function escapeHtml(str){
+      return str.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+
+    function buildEmailSummary(){
+      const initials = ($("#initials").value || "").trim();
+      const ageBand = ($("#ageBand").value || "").trim();
+      const eventDesc = ($("#eventDesc").value || "").trim();
+      const date = isoDate();
+
+      const phq = getAnswers("phq9", phq9Items.length);
+      const gad = getAnswers("gad7", gad7Items.length);
+      const iesr = getAnswers("iesr", iesrItems.length);
+
+      const phqSev = phqSeverity(phq.total);
+      const gadSev = gadSeverity(gad.total);
+
+      const lines = [
         `Initials: ${initials}`,
         `Age band: ${ageBand || "Not provided"}`,
         `Date: ${date}`,
-        eventDesc ? `Event description (brief): ${eventDesc}` : "Event description: Not provided",
+        eventDesc ? `Event (brief): ${eventDesc}` : "Event (brief): Not provided",
         "",
         `PHQ-9 total: ${phq.total} (${phqSev})`,
         `PHQ-9 answers (Q1–Q9): ${phq.answers.join(", ")}`,
@@ -371,24 +642,62 @@
         `IES-R answers (Q1–Q22): ${iesr.answers.join(", ")}`
       ];
 
-      const summaryText = summaryLines.join("\n");
-      document.getElementById("summary").value = summaryText;
+      $("#summary").value = lines.join("\n");
+      $("#_subject").value = `Questionnaires – ${initials} – ${date}`;
+    }
 
-      // Client-facing feedback
-      resultsBox.style.display = "block";
-      resultsBox.innerHTML = `
-        <strong>Thank you. Your responses have been recorded.</strong><br><br>
-        <strong>PHQ-9:</strong> ${phq.total} (${phqSev})<br>
-        <strong>GAD-7:</strong> ${gad.total} (${gadSev})<br>
-        <strong>IES-R:</strong> ${iesr.total}<br><br>
-        Your responses will now be sent securely to your therapist.
-      `;
+    // ---------- Init ----------
+    renderQuestions("phq9Questions", phq9Items, "phq9", phqGadOptions);
+    renderQuestions("gad7Questions", gad7Items, "gad7", phqGadOptions);
+    renderQuestions("iesrQuestions", iesrItems, "iesr", iesrOptions);
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Sending…";
+    let currentStep = 0;
+    showStep(currentStep);
 
-      // Now actually submit the form to FormSubmit
-      form.submit();
+    $("#initials").addEventListener("input", setInitialsBadge);
+
+    $("#backBtn").addEventListener("click", () => {
+      if (currentStep > 0){
+        currentStep -= 1;
+        showStep(currentStep);
+      }
+    });
+
+    $("#nextBtn").addEventListener("click", () => {
+      // Validate current step before moving forward/submitting
+      if (!validateStep(currentStep)) return;
+
+      // Move forward
+      if (currentStep < 4){
+        currentStep += 1;
+
+        // If arriving at review, populate it
+        if (currentStep === 4){
+          fillReview();
+        }
+
+        showStep(currentStep);
+        return;
+      }
+
+      // currentStep === 4 => SUBMIT
+      // Final safety check: all answered
+      const phq = getAnswers("phq9", phq9Items.length);
+      const gad = getAnswers("gad7", gad7Items.length);
+      const iesr = getAnswers("iesr", iesrItems.length);
+      if (!phq || !gad || !iesr){
+        alert("Please ensure all questionnaires are fully completed before submitting.");
+        return;
+      }
+
+      buildEmailSummary();
+
+      // Disable button to prevent double submit
+      $("#nextBtn").disabled = true;
+      $("#nextBtn").textContent = "Sending…";
+
+      // Submit one time
+      $("#wizardForm").submit();
     });
   </script>
 </body>

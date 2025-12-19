@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mood, Anxiety & Trauma Questionnaires</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      line-height: 1.5;
+      background: #f5f5f7;
+      color: #222;
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .question {
+      margin-bottom: 1rem;
+    }
+    .question p {
+      margin: 0 0 0.5rem;
+      font-weight: 500;
+    }
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      font-size: 0.95rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font: inherit;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    .small {
+      font-size: 0.85rem;
+      color: #555;
+    }
+    .required {
+      color: #c00;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #2f6fed;
+      color: white;
+      font-weight: 600;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .result-box {
+      background: #e8f0ff;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mood, Anxiety & Trauma Questionnaires</h1>
+  <p class="small">
+    Your answers will be sent securely to your therapist at Meaningful Path Therapy.
+    Only your initials are required, not your full name. By submitting, you consent to these
+    results being used for clinical purposes.
+  </p>
+
+  <!--
+    Form posts to FormSubmit, which emails meaningfulpaththerapy@gmail.com.
+    User does NOT need an email account or client.
+  -->
+  <form
+    id="screeners-form"
+    class="card"
+    action="https://formsubmit.co/meaningfulpaththerapy@gmail.com"
+    method="POST"
+  >
+    <!-- FormSubmit options -->
+    <input type="hidden" name="_subject" value="Questionnaire results – Meaningful Path Therapy">
+    <!-- You can change _next to a thank-you page if you create one -->
+    <!-- <input type="hidden" name="_next" value="https://your-username.github.io/your-repo/thankyou.html"> -->
+
+    <!-- This will contain the full computed summary (scores + answers) -->
+    <textarea name="summary" id="summary" style="display:none;"></textarea>
+
+    <!-- Client info -->
+    <div class="card" style="padding:1rem; margin:-0.5rem 0 1.5rem;">
+      <label for="initials">Initials <span class="required">*</span></label>
+      <input type="text" id="initials" name="initials" maxlength="10" required>
+
+      <label for="ageBand" style="margin-top:0.75rem;">Age band (optional)</label>
+      <select id="ageBand" name="ageBand">
+        <option value="">Prefer not to say</option>
+        <option value="18-24">18–24</option>
+        <option value="25-34">25–34</option>
+        <option value="35-44">35–44</option>
+        <option value="45-54">45–54</option>
+        <option value="55+">55+</option>
+      </select>
+
+      <label for="eventDesc" style="margin-top:0.75rem;">
+        Brief description of the stressful event (for IES-R, optional)
+      </label>
+      <textarea
+        id="eventDesc"
+        name="eventDesc"
+        placeholder="e.g. accident, loss, assault (no details needed)"
+      ></textarea>
+
+      <div style="margin-top:0.75rem;">
+        <label style="font-weight:400;">
+          <input type="checkbox" id="consent" required>
+          I agree to share these questionnaire results with my therapist.
+        </label>
+      </div>
+    </div>
+
+    <!-- PHQ-9 -->
+    <div class="card">
+      <h2>PHQ-9 – Mood (past 2 weeks)</h2>
+      <p class="small">
+        Over the last 2 weeks, how often have you been bothered by any of the following problems?
+      </p>
+      <div id="phq9-questions"></div>
+    </div>
+
+    <!-- GAD-7 -->
+    <div class="card">
+      <h2>GAD-7 – General Anxiety (past 2 weeks)</h2>
+      <p class="small">
+        Over the last 2 weeks, how often have you been bothered by the following problems?
+      </p>
+      <div id="gad7-questions"></div>
+    </div>
+
+    <!-- IES-R -->
+    <div class="card">
+      <h2>IES-R – Impact of Event (past 7 days)</h2>
+      <p class="small">
+        Below is a list of difficulties people sometimes have after stressful life events.
+        Please indicate how distressing each difficulty has been for you during the past 7 days
+        with respect to the event you have in mind.
+      </p>
+      <div id="iesr-questions"></div>
+    </div>
+
+    <!-- Client-facing summary -->
+    <div id="results" class="result-box" style="display:none;"></div>
+
+    <button id="submit-btn" type="submit">Submit results</button>
+  </form>
+
+  <script>
+    // ====== DATA: QUESTION TEXTS ======
+
+    const phq9Items = [
+      "Little interest or pleasure in doing things",
+      "Feeling down, depressed, or hopeless",
+      "Trouble falling or staying asleep, or sleeping too much",
+      "Feeling tired or having little energy",
+      "Poor appetite or overeating",
+      "Feeling bad about yourself, or that you are a failure or have let yourself or your family down",
+      "Trouble concentrating on things, such as reading or watching TV",
+      "Moving or speaking so slowly that other people could have noticed, or the opposite – being so fidgety or restless that you have been moving around a lot more than usual",
+      "Thoughts that you would be better off dead, or thoughts of hurting yourself in some way"
+    ];
+
+    const gad7Items = [
+      "Feeling nervous, anxious, or on edge",
+      "Not being able to stop or control worrying",
+      "Worrying too much about different things",
+      "Trouble relaxing",
+      "Being so restless that it is hard to sit still",
+      "Becoming easily annoyed or irritable",
+      "Feeling afraid as if something awful might happen"
+    ];
+
+    const iesrItems = [
+      "Any reminder brought back feelings about it",
+      "I had trouble staying asleep",
+      "Other things kept making me think about it",
+      "I felt irritable and angry",
+      "I avoided letting myself get upset when I thought about it or was reminded of it",
+      "I thought about it when I didn't mean to",
+      "I felt as if it hadn't happened or wasn't real",
+      "I stayed away from reminders of it",
+      "Pictures about it popped into my mind",
+      "I was jumpy and easily startled",
+      "I tried not to think about it",
+      "I was aware that I still had a lot of feelings about it, but I didn't deal with them",
+      "My feelings about it were kind of numb",
+      "I found myself acting or feeling like I was back at that time",
+      "I had trouble falling asleep",
+      "I had waves of strong feelings about it",
+      "I tried to remove it from my memory",
+      "I had trouble concentrating",
+      "Reminders of it caused me to have physical reactions (e.g. sweating, trouble breathing, nausea, pounding heart)",
+      "I had dreams about it",
+      "I felt watchful and on guard",
+      "I tried not to talk about it"
+    ];
+
+    // ====== RENDER HELPERS ======
+
+    function renderLikertQuestions(containerId, items, namePrefix, options) {
+      const container = document.getElementById(containerId);
+      items.forEach((text, index) => {
+        const qNum = index + 1;
+        const name = `${namePrefix}_q${qNum}`;
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "question";
+
+        const p = document.createElement("p");
+        p.textContent = `${qNum}. ${text}`;
+        wrapper.appendChild(p);
+
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+
+        options.forEach(opt => {
+          const label = document.createElement("label");
+          label.style.fontWeight = "400";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = name;
+          input.value = opt.value;
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(" " + opt.label));
+          optionsDiv.appendChild(label);
+        });
+
+        wrapper.appendChild(optionsDiv);
+        container.appendChild(wrapper);
+      });
+    }
+
+    const phqGadOptions = [
+      { value: 0, label: "Not at all (0)" },
+      { value: 1, label: "Several days (1)" },
+      { value: 2, label: "More than half the days (2)" },
+      { value: 3, label: "Nearly every day (3)" }
+    ];
+
+    const iesrOptions = [
+      { value: 0, label: "Not at all (0)" },
+      { value: 1, label: "A little bit (1)" },
+      { value: 2, label: "Moderately (2)" },
+      { value: 3, label: "Quite a bit (3)" },
+      { value: 4, label: "Extremely (4)" }
+    ];
+
+    renderLikertQuestions("phq9-questions", phq9Items, "phq9", phqGadOptions);
+    renderLikertQuestions("gad7-questions", gad7Items, "gad7", phqGadOptions);
+    renderLikertQuestions("iesr-questions", iesrItems, "iesr", iesrOptions);
+
+    // ====== SCORING HELPERS ======
+
+    function getScore(prefix, count) {
+      let total = 0;
+      const answers = [];
+      for (let i = 1; i <= count; i++) {
+        const name = `${prefix}_q${i}`;
+        const el = document.querySelector(`input[name="${name}"]:checked`);
+        if (!el) {
+          return null; // missing answer
+        }
+        const val = parseInt(el.value, 10);
+        answers.push(val);
+        total += val;
+      }
+      return { total, answers };
+    }
+
+    function phqSeverity(score) {
+      if (score <= 4) return "Minimal";
+      if (score <= 9) return "Mild";
+      if (score <= 14) return "Moderate";
+      if (score <= 19) return "Moderately severe";
+      return "Severe";
+    }
+
+    function gadSeverity(score) {
+      if (score <= 4) return "Minimal";
+      if (score <= 9) return "Mild";
+      if (score <= 14) return "Moderate";
+      return "Severe";
+    }
+
+    function formatDateISO() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    // ====== FORM SUBMIT LOGIC ======
+
+    const form = document.getElementById("screeners-form");
+    const resultsBox = document.getElementById("results");
+    const submitBtn = document.getElementById("submit-btn");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault(); // we will manually submit after building summary
+
+      const initials = document.getElementById("initials").value.trim();
+      const ageBand = document.getElementById("ageBand").value;
+      const eventDesc = document.getElementById("eventDesc").value.trim();
+      const consentChecked = document.getElementById("consent").checked;
+
+      if (!initials) {
+        alert("Please enter your initials.");
+        return;
+      }
+      if (!consentChecked) {
+        alert("Please tick the consent box before submitting.");
+        return;
+      }
+
+      const phq = getScore("phq9", phq9Items.length);
+      const gad = getScore("gad7", gad7Items.length);
+      const iesr = getScore("iesr", iesrItems.length);
+
+      if (!phq || !gad || !iesr) {
+        alert("Please answer all questions on all questionnaires before submitting.");
+        return;
+      }
+
+      const phqSev = phqSeverity(phq.total);
+      const gadSev = gadSeverity(gad.total);
+      const date = formatDateISO();
+
+      // Build a detailed summary to receive by email
+      const summaryLines = [
+        `Initials: ${initials}`,
+        `Age band: ${ageBand || "Not provided"}`,
+        `Date: ${date}`,
+        eventDesc ? `Event description (brief): ${eventDesc}` : "Event description: Not provided",
+        "",
+        `PHQ-9 total: ${phq.total} (${phqSev})`,
+        `PHQ-9 answers (Q1–Q9): ${phq.answers.join(", ")}`,
+        "",
+        `GAD-7 total: ${gad.total} (${gadSev})`,
+        `GAD-7 answers (Q1–Q7): ${gad.answers.join(", ")}`,
+        "",
+        `IES-R total: ${iesr.total}`,
+        `IES-R answers (Q1–Q22): ${iesr.answers.join(", ")}`
+      ];
+
+      const summaryText = summaryLines.join("\n");
+      document.getElementById("summary").value = summaryText;
+
+      // Client-facing feedback
+      resultsBox.style.display = "block";
+      resultsBox.innerHTML = `
+        <strong>Thank you. Your responses have been recorded.</strong><br><br>
+        <strong>PHQ-9:</strong> ${phq.total} (${phqSev})<br>
+        <strong>GAD-7:</strong> ${gad.total} (${gadSev})<br>
+        <strong>IES-R:</strong> ${iesr.total}<br><br>
+        Your responses will now be sent securely to your therapist.
+      `;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending…";
+
+      // Now actually submit the form to FormSubmit
+      form.submit();
+    });
+  </script>
+</body>
+</html>
